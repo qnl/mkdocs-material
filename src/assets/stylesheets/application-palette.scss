@@ -37,6 +37,8 @@
 
 @import "config";
 
+@import "berkeley-palette";
+
 // ----------------------------------------------------------------------------
 // Rules: button styles
 // ----------------------------------------------------------------------------
@@ -68,25 +70,26 @@ button[data-md-color-accent] {
 
 // Build primary colors
 @each $name, $color in (
-  "red":         $clr-red-400,
-  "pink":        $clr-pink-500,
-  "purple":      $clr-purple-400,
-  "deep-purple": $clr-deep-purple-400,
-  "indigo":      $clr-indigo-500,
-  "blue":        $clr-blue-500,
-  "light-blue":  $clr-light-blue-500,
-  "cyan":        $clr-cyan-500,
-  "teal":        $clr-teal-500,
-  "green":       $clr-green-500,
-  "light-green": $clr-light-green-600,
-  "lime":        $clr-lime-600,
-  "yellow":      $clr-yellow-800,
-  "amber":       $clr-amber-700,
-  "orange":      $clr-orange-600,
-  "deep-orange": $clr-deep-orange-400,
-  "brown":       $clr-brown-500,
-  "grey":        $clr-grey-600,
-  "blue-grey":   $clr-blue-grey-600
+  "red":           $clr-red-400,
+  "pink":          $clr-pink-500,
+  "purple":        $clr-purple-400,
+  "deep-purple":   $clr-deep-purple-400,
+  "indigo":        $clr-indigo-500,
+  "blue":          $clr-blue-500,
+  "light-blue":    $clr-light-blue-500,
+  "cyan":          $clr-cyan-500,
+  "teal":          $clr-teal-500,
+  "green":         $clr-green-500,
+  "light-green":   $clr-light-green-600,
+  "lime":          $clr-lime-600,
+  "yellow":        $clr-yellow-800,
+  "amber":         $clr-amber-700,
+  "orange":        $clr-orange-600,
+  "deep-orange":   $clr-deep-orange-400,
+  "brown":         $clr-brown-500,
+  "grey":          $clr-grey-600,
+  "blue-grey":     $clr-blue-grey-600,
+  "berkeley-blue": $clr-berkeley-blue,
 ) {
 
   // Color tile for presentation in theme documentation
@@ -102,6 +105,14 @@ button[data-md-color-accent] {
       color: $color;
     }
 
+    .md-footer-meta {
+      background-color: $color;
+    }
+
+    .md-footer-nav {
+      background-color: $color;
+    }
+
     // Application header (stays always on top)
     .md-header {
       background-color: $color;
@@ -110,12 +121,6 @@ button[data-md-color-accent] {
     // Hero teaser
     .md-hero {
       background-color: $color;
-    }
-
-    // Current or active link
-    .md-nav__link:active,
-    .md-nav__link--active {
-      color: $color;
     }
 
     // Reset active color for nested list titles
@@ -314,7 +319,8 @@ button[data-md-color-primary="black"] {
   "yellow":      $clr-yellow-a700,
   "amber":       $clr-amber-a700,
   "orange":      $clr-orange-a400,
-  "deep-orange": $clr-deep-orange-a200
+  "deep-orange": $clr-deep-orange-a200,
+  "medalist":    $clr-medalist,
 ) {
 
   // Color tile for presentation in theme documentation
@@ -331,6 +337,10 @@ button[data-md-color-primary="black"] {
       // Hovered and active links
       a:hover,
       a:active {
+        color: $color;
+      }
+
+      h1 {
         color: $color;
       }
 
@@ -363,6 +373,12 @@ button[data-md-color-primary="black"] {
     // Focused or hovered link
     .md-nav__link:focus,
     .md-nav__link:hover {
+      color: $color;
+    }
+
+    // Current or active link
+    .md-nav__link:active,
+    .md-nav__link--active {
       color: $color;
     }
 

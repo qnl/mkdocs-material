@@ -1,0 +1,42 @@
+/// Berkeley Color Palette
+
+$clr-primary-list: (
+  "berkeley-blue":   #003262,
+  "founders-rock":   #3B7EA1,
+  "california-gold": #FDB515,
+  "medalist":        #C4820E,
+);
+
+$clr-berkeley-blue:   map-get($clr-primary-list, "berkeley-blue");
+$clr-founders-rock:   map-get($clr-primary-list, "founders-rock");
+$clr-california-gold: map-get($clr-primary-list, "california-gold");
+$clr-medalist:        map-get($clr-primary-list, "medalist");
+
+
+$clr-secondary-list: (
+    "wellman-tile": #D9661F,
+    "rose-garden":  #EE1F60,
+    "golden-gate":  #ED4E33,
+    "south-hall":   #6C3302,
+    "bay-fog":      #DDD5C7,
+    "lawrence":     #00B0DA,
+    "lap-lane":     #00A598,
+    "pacific":      #46535E,
+    "sather-gate":  #B9D3B6,
+    "ion":          #CFDD45,
+    "soybean":      #859438,
+    "stone-pine":   #584F29,
+);
+
+$clr-wellman-tile: map-get($clr-secondary-list, "wellman-tile");
+$clr-rose-garden:  map-get($clr-secondary-list, "rose-garden");
+$clr-golden-gate:  map-get($clr-secondary-list, "golden-gate");
+$clr-south-hall:   map-get($clr-secondary-list, "south-hall");
+$clr-bay-fog:      map-get($clr-secondary-list, "bay-fog");
+$clr-lawrence:     map-get($clr-secondary-list, "lawrence");
+$clr-lap-lane:     map-get($clr-secondary-list, "lap-lane");
+$clr-pacific:      map-get($clr-secondary-list, "pacific");
+$clr-sather-gate:  map-get($clr-secondary-list, "sather-gate");
+$clr-ion:          map-get($clr-secondary-list, "ion");
+$clr-soybean:      map-get($clr-secondary-list, "soybean");
+$clr-stone-pine:   map-get($clr-secondary-list, "stone-pine");
