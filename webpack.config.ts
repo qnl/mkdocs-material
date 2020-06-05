@@ -20,13 +20,12 @@
  * IN THE SOFTWARE.
  */
 
-// tslint:disable no-var-requires
-
 import * as CopyPlugin from "copy-webpack-plugin"
 import * as EventHooksPlugin from "event-hooks-webpack-plugin"
 import * as fs from "fs"
 import { minify as minhtml } from "html-minifier"
 import IgnoreEmitPlugin from "ignore-emit-webpack-plugin"
+import ImageminPlugin from "imagemin-webpack-plugin"
 import MiniCssExtractPlugin = require("mini-css-extract-plugin")
 import * as path from "path"
 import { toPairs } from "ramda"
@@ -34,16 +33,6 @@ import { minify as minjs } from "terser"
 import { TsconfigPathsPlugin } from "tsconfig-paths-webpack-plugin"
 import { Configuration } from "webpack"
 import * as AssetsManifestPlugin from "webpack-assets-manifest"
-
-/* ----------------------------------------------------------------------------
- * Data
- * ------------------------------------------------------------------------- */
-
-/**
- * Material icons
- */
-const data = require("material-design-icons-svg/paths")
-const icon = require("material-design-icons-svg")(data)
 
 /* ----------------------------------------------------------------------------
  * Helper functions
@@ -97,37 +86,24 @@ function config(args: Configuration): Configuration {
               }
             },
             {
-              loader: "string-replace-loader",
-              options: {
-                multiple: [
-                  {
-                    search: "\\{{2}\\s+?([^}]+)\\s+?\\}{2}",
-                    replace(_: string, props: string) {
-                      const [name, color] = props.split(" ")
-
-                      /* Load icon and set color, if given */
-                      const svg = icon.getSVG(
-                        path.basename(name, ".json"),
-                        color ? ` style="fill: ${color}"` : undefined
-                      )
-                        .replace(/"/g, "'")
-                        .replace(/#/g, "%23")
-
-                      /* Return encoded icon */
-                      return `data:image/svg+xml;utf8,${svg}`
-                    },
-                    flags: "g"
-                  }
-                ]
-              }
-            },
-            {
               loader: "postcss-loader",
               options: {
                 ident: "postcss",
                 plugins: () => [
                   require("autoprefixer")(),
-                  require("css-mqpacker")
+                  require("postcss-inline-svg")({
+                    paths: [
+                      path.resolve(__dirname, "node_modules")
+                    ],
+                    encode: false
+                  }),
+                  require("postcss-svgo")({
+                    plugins: [
+                      { removeDimensions: true },
+                      { removeViewBox: false }
+                    ],
+                    encode: false
+                  })
                 ],
                 sourceMap: true
               }
@@ -232,81 +208,91 @@ export default (_env: never, args: Configuration): Configuration[] => {
         }),
 
         /* FontAwesome icons */
-        new CopyPlugin([
-          { to: ".icons/fontawesome", from: "**/*.svg" },
-          { to: ".icons/fontawesome", from: "../LICENSE.txt" }
-        ], {
-          context: "node_modules/@fortawesome/fontawesome-free/svgs"
+        new CopyPlugin({
+          patterns: [
+            { to: ".icons/fontawesome", from: "**/*.svg" },
+            { to: ".icons/fontawesome", from: "../LICENSE.txt" }
+          ].map(pattern => ({
+            context: "node_modules/@fortawesome/fontawesome-free/svgs",
+            ...pattern
+          }))
         }),
 
-        /* Material icons */
-        new CopyPlugin([
-          {
-            to: ".icons/material/[name].svg",
-            from: "**/*.json",
-            toType: "template",
-            transform: (_, file) => icon.getSVG(path.basename(file, ".json"))
-          }
-        ], {
-          context: "node_modules/material-design-icons-svg/paths"
+        /* Material Design icons */
+        new CopyPlugin({
+          patterns: [
+            { to: ".icons/material", from: "*.svg" }
+          ].map(pattern => ({
+            context: "node_modules/@mdi/svg/svg",
+            ...pattern
+          }))
         }),
 
         /* GitHub octicons */
-        new CopyPlugin([
-          { to: ".icons/octicons", from: "*.svg" },
-          { to: ".icons/octicons", from: "../../LICENSE" }
-        ], {
-          context: "node_modules/@primer/octicons/build/svg"
+        new CopyPlugin({
+          patterns: [
+            { to: ".icons/octicons", from: "*.svg" },
+            { to: ".icons/octicons", from: "../../LICENSE" }
+          ].map(pattern => ({
+            context: "node_modules/@primer/octicons/build/svg",
+            ...pattern
+          }))
         }),
 
         /* Search stemmers and segmenters */
-        new CopyPlugin([
-          { to: "assets/javascripts/lunr", from: "min/*.js" },
-          {
-            to: "assets/javascripts/lunr/tinyseg.min.js",
-            from: "tinyseg.js",
-            transform: content => minjs(`${content}`).code!
-          }
-        ], {
-          context: "node_modules/lunr-languages"
+        new CopyPlugin({
+          patterns: [
+            { to: "assets/javascripts/lunr", from: "min/*.js" },
+            {
+              to: "assets/javascripts/lunr/tinyseg.min.js",
+              from: "tinyseg.js",
+              transform: (content: Buffer) => minjs(`${content}`).code!
+            }
+          ].map(pattern => ({
+            context: "node_modules/lunr-languages",
+            ...pattern
+          }))
         }),
 
         /* Template files */
-        new CopyPlugin([
-          { from: ".icons/*.svg" },
-          { from: "assets/images/*" },
-          { from: "**/*.{py,yml}" },
-          {
-            from: "**/*.html",
-            transform: content => {
-              const metadata = require("./package.json")
-              const banner =
-                "{#-\n" +
-                "  This file was automatically generated - do not edit\n" +
-                "-#}\n"
+        new CopyPlugin({
+          patterns: [
+            { from: ".icons/*.svg" },
+            { from: "assets/images/*" },
+            { from: "**/*.{py,yml}" },
+            {
+              from: "**/*.html",
+              transform: (content: Buffer) => {
+                const metadata = require("./package.json")
+                const banner =
+                  "{#-\n" +
+                  "  This file was automatically generated - do not edit\n" +
+                  "-#}\n"
 
-              /* Normalize line feeds and minify HTML */
-              const html = content.toString().replace(/\r\n/gm, "\n")
-              return banner + minhtml(html, {
-                collapseBooleanAttributes: true,
-                includeAutoGeneratedTags: false,
-                minifyCSS: true,
-                minifyJS: true,
-                removeComments: true,
-                removeScriptTypeAttributes: true,
-                removeStyleLinkTypeAttributes: true
-              })
+                /* Normalize line feeds and minify HTML */
+                const html = content.toString().replace(/\r\n/gm, "\n")
+                return banner + minhtml(html, {
+                  collapseBooleanAttributes: true,
+                  includeAutoGeneratedTags: false,
+                  minifyCSS: true,
+                  minifyJS: true,
+                  removeComments: true,
+                  removeScriptTypeAttributes: true,
+                  removeStyleLinkTypeAttributes: true
+                })
 
-                /* Remove empty lines without collapsing everything */
-                .replace(/^\s*[\r\n]/gm, "")
+                  /* Remove empty lines without collapsing everything */
+                  .replace(/^\s*[\r\n]/gm, "")
 
-                /* Write theme version into template */
-                .replace("$md-name$", metadata.name)
-                .replace("$md-version$", metadata.version)
+                  /* Write theme version into template */
+                  .replace("$md-name$", metadata.name)
+                  .replace("$md-version$", metadata.version)
+              }
             }
-          }
-        ], {
-          context: "src"
+          ].map(pattern => ({
+            context: "src",
+            ...pattern
+          }))
         }),
 
         /* Hooks */
@@ -318,12 +304,22 @@ export default (_env: never, args: Configuration): Configuration[] => {
               const manifest = require("./material/assets/manifest.json")
               const template = toPairs<string>(manifest)
                 .reduce((content, [from, to]) => {
-                  return content.replace(from, to)
+                  return content.replace(new RegExp(from, "g"), to)
                 }, fs.readFileSync("material/base.html", "utf8"))
 
               /* Save template with replaced assets */
               fs.writeFileSync("material/base.html", template, "utf8")
             }
+          }
+        }),
+
+        /* Minify SVGs */
+        new ImageminPlugin({
+          svgo: {
+            plugins: [
+              { removeDimensions: true },
+              { removeViewBox: false }
+            ]
           }
         })
       ],
@@ -333,7 +329,7 @@ export default (_env: never, args: Configuration): Configuration[] => {
         splitChunks: {
           cacheGroups: {
             vendor: {
-              test: /\/node_modules\//,
+              test: /[\\/]node_modules[\\/]/,
               name: "assets/javascripts/vendor",
               chunks: "all"
             }

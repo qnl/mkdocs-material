@@ -265,6 +265,7 @@ The following language codes are supported:
 <ul class="md-language-list">
   <li><code>af</code> / Afrikaans</li>
   <li><code>ar</code> / Arabic</li>
+  <li><code>my</code> / Burmese</li>
   <li><code>ca</code> / Catalan</li>
   <li><code>zh</code> / Chinese (Simplified)</li>
   <li><code>zh-Hant</code> / Chinese (Traditional)</li>
@@ -291,7 +292,7 @@ The following language codes are supported:
   <li><code>nn</code> / Norwegian (Nynorsk)</li>
   <li><code>fa</code> / Persian</li>
   <li><code>pl</code> / Polish</li>
-  <li><code>pt</code> / Portugese</li>
+  <li><code>pt</code> / Portuguese</li>
   <li><code>ro</code> / Romanian</li>
   <li><code>ru</code> / Russian</li>
   <li><code>sr</code> / Serbian</li>
@@ -319,6 +320,50 @@ selected language, but can also be set with:
 theme:
   direction: rtl
 ```
+
+### Color scheme
+
+> Default: `default`
+
+Material for MkDocs supports two color schemes: a light mode, which is just
+called `default`, and a dark mode, which is called `slate`. The color scheme
+can be set from `mkdocs.yml`:
+
+``` yaml
+theme:
+  palette:
+    scheme: slate
+```
+
+Click on a color name to change the color scheme of the theme:
+
+<style>
+  .md-typeset button[data-md-color-scheme] {
+    cursor: pointer;
+    transition: opacity 250ms;
+  }
+  .md-typeset button[data-md-color-scheme]:hover {
+    opacity: 0.75;
+  }
+  .md-typeset button[data-md-color-scheme] > code {
+    display: block;
+    color: var(--md-primary-bg-color);
+    background-color: var(--md-primary-fg-color);
+  }
+</style>
+
+<button data-md-color-scheme="default"><code>default</code></button>
+<button data-md-color-scheme="slate"><code>slate</code></button>
+
+<script>
+  var buttons = document.querySelectorAll("button[data-md-color-scheme]")
+  buttons.forEach(function(button) {
+    var attr = "data-md-color-scheme"
+    button.addEventListener("click", function() {
+      document.body.setAttribute(attr, this.getAttribute(attr))
+    })
+  })
+</script>
 
 ### Color palette
 
@@ -396,9 +441,6 @@ Click on a color name to change the primary color of the theme:
     display: block;
     color: var(--md-primary-bg-color);
     background-color: var(--md-primary-fg-color);
-    box-shadow:
-       0.2941176471em 0 0 var(--md-primary-fg-color), 
-      -0.2941176471em 0 0 var(--md-primary-fg-color);
   }
 </style>
 
@@ -530,15 +572,15 @@ theme:
 All icons are directly inlined as `*.svg` files, so no further requests will be
 made. Icon sets which are bundled with Material for MkDocs:
 
-* [Material Design icons][16]: 3.8k icons
-* [FontAwesome icons][17]: 1.5k icons
-* [GitHub's Octicons][18]: 200 icons
+* [Material Design icons][16] (`material`): 5.1k icons
+* [FontAwesome icons][17] (`fontawesome`): 1.6k icons
+* [GitHub's Octicons][18] (`octicons`): 200 icons
 
 __You can use all those icons [directly from :fontawesome-brands-markdown:
 Markdown][19]!__
 
   [15]: #adding-social-links
-  [16]: https://material.io/resources/icons/
+  [16]: https://materialdesignicons.com/
   [17]: https://fontawesome.com/icons?d=gallery&m=free
   [18]: https://octicons.github.com/
   [19]: extensions/pymdown.md#icons
@@ -616,6 +658,10 @@ extra:
     - icon: fontawesome/brands/linkedin
       link: https://linkedin.com/in/squidfunk
 ```
+
+By default, the link `title` will be set to the domain name, e.g. _github.com_.
+If you want to set a discernable name, e.g., to improve your Lighthouse score,
+you can set the `name` attribute on each social link.
 
   [21]: #icons
 

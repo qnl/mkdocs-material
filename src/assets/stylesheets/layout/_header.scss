@@ -75,6 +75,7 @@
   &__button {
     position: relative;
     z-index: 1;
+    display: block;
     margin: px2rem(4px);
     padding: px2rem(8px);
     cursor: pointer;

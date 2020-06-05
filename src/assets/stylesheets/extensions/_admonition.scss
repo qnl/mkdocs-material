@@ -52,8 +52,8 @@ $admonitions: (
     $name: nth($names, 1);
     $icon: nth($props, 1);
 
-    // Inline icon through string-replace-loader in webpack
-    --md-admonition-icon--#{$name}: url("{{ #{$icon} }}");
+    // Inline icon through postcss in webpack
+    --md-admonition-icon--#{$name}: svg-load("@mdi/svg/svg/#{$icon}.svg");
   }
 }
 
@@ -67,8 +67,10 @@ $admonitions: (
     margin: 1.5625em 0;
     padding: 0 px2rem(12px);
     overflow: hidden;
+    color: var(--md-admonition-fg-color);
     font-size: ms(-1);
     page-break-inside: avoid;
+    background-color: var(--md-admonition-bg-color);
     border-left: px2rem(4px) solid $clr-blue-a200;
     border-radius: px2rem(2px);
     box-shadow:

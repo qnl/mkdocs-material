@@ -33,7 +33,7 @@ body {
 // Default fonts
 body,
 input {
-  color: var(--md-default-fg-color);
+  color: var(--md-text-color);
   font-feature-settings: "kern", "liga";
   font-family: -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif;
 }
@@ -42,7 +42,7 @@ input {
 code,
 pre,
 kbd {
-  color: var(--md-default-fg-color);
+  color: var(--md-text-color);
   font-feature-settings: "kern";
   font-family: SFMono-Regular, Consolas, Menlo, monospace;
 }
@@ -132,7 +132,7 @@ kbd {
 
   // Links
   a {
-    color: var(--md-primary-fg-color);
+    color: var(--md-text-link-color);
     word-break: break-word;
 
     // Also enable color transition on pseudo elements
@@ -205,6 +205,14 @@ kbd {
       box-shadow: none;
       box-decoration-break: slice;
       touch-action: auto;
+      // Override Firefox scrollbar style
+      scrollbar-width: thin;
+      scrollbar-color: var(--md-default-fg-color--lighter) transparent;
+
+      // Override Firefox scrollbar hover color
+      &:hover {
+        scrollbar-color: var(--md-accent-fg-color) transparent;
+      }
 
       // Override native scrollbar styles
       &::-webkit-scrollbar {
@@ -375,10 +383,15 @@ kbd {
     }
   }
 
-  // Limit width to container
-  iframe,
+  // Limit width to container, scale height proportionally
   img,
   svg {
+    max-width: 100%;
+    height: auto;
+  }
+
+  // Limit width to container
+  iframe {
     max-width: 100%;
   }
 
@@ -420,6 +433,11 @@ kbd {
       color: var(--md-default-bg-color);
       vertical-align: top;
       background-color: var(--md-default-fg-color--light);
+
+      // Links in table headings
+      a {
+        color: inherit;
+      }
     }
 
     // Table cells
